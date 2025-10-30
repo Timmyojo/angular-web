@@ -1,0 +1,287 @@
+<!-- 🔹 En-tête : boutons de contrôle -->
+<div class="flex justify-between items-center mb-3">
+  <div class="flex items-center gap-2">
+    <!-- Bouton sélection des colonnes -->
+    <button
+      *ngIf="showColumnSelectorButton"
+      class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 text-sm flex items-center gap-2 rounded"
+      (click)="showColumnSelector = !showColumnSelector"
+    >
+      <i class="fa-solid fa-filter"></i>
+      <span>{{ "datatable.columns" | transloco }}</span>
+    </button>
+  </div>
+
+  <!-- 🔹 Boutons de mode édition / sauvegarde -->
+  <div *ngIf="editable" class="flex items-center gap-3">
+    <!-- Loader de sauvegarde -->
+    <div *ngIf="isSaving" class="flex items-center text-gray-600 text-sm gap-2">
+      <div
+        role="status"
+        class="inline-block w-4 h-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em]"
+      ></div>
+      <span>{{ "datatable.saving" | transloco }}</span>
+    </div>
+
+    <!-- Bouton Éditer -->
+    <button
+      *ngIf="!isEditMode"
+      class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 text-sm flex items-center gap-2 rounded"
+      (click)="toggleEditMode()"
+    >
+      <i class="fas fa-edit"></i>
+      <span>{{ "datatable.edit" | transloco }}</span>
+    </button>
+
+    <!-- Bouton Annuler -->
+    <button
+      *ngIf="isEditMode"
+      [disabled]="!hasChanges || isSaving"
+      class="bg-gray-200 text-gray-500 px-3 py-1 text-sm flex items-center gap-2 rounded cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+      [class.hover:bg-gray-300]="hasChanges && !isSaving"
+      (click)="cancelAll()"
+    >
+      <i class="fas fa-times-circle"></i>
+      <span>{{ "datatable.cancel" | transloco }}</span>
+    </button>
+
+    <!-- Bouton Enregistrer -->
+    <button
+      *ngIf="isEditMode"
+      [disabled]="isSaving"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm flex items-center gap-2 rounded shadow"
+      (click)="saveAll()"
+    >
+      <i class="fas fa-save"></i>
+      <span>{{ "datatable.save" | transloco }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- 🔹 Sélecteur de colonnes -->
+<div
+  *ngIf="showColumnSelector"
+  class="bg-gray-100 rounded-lg p-3 mb-4 text-sm w-full mx-auto relative z-20"
+>
+  <h4 class="font-semibold mb-2 text-gray-700">
+    {{ "datatable.selectColumns" | transloco }}
+  </h4>
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <label
+      *ngFor="let col of columns"
+      [class.cursor-pointer]="!isActionColumn(col)"
+      [class.cursor-not-allowed]="isActionColumn(col)"
+      [class.opacity-50]="isActionColumn(col)"
+      class="flex items-center gap-2"
+    >
+      <input
+        type="checkbox"
+        class="accent-blue-600"
+        [checked]="isColumnVisible(col)"
+        [disabled]="isActionColumn(col)"
+        (change)="toggleColumn(col)"
+      />
+      {{ getTranslatedLabel(col) }}
+      <span *ngIf="isActionColumn(col)" class="text-xs text-gray-500"
+        >({{ "datatable.alwaysVisible" | transloco }})</span
+      >
+    </label>
+  </div>
+</div>
+
+<!-- 🔹 Tableau principal -->
+<div class="bg-white w-full shadow overflow-x-auto rounded">
+  <table
+    *ngIf="!isLoading && !hasError && items.length > 0"
+    class="w-full max-w-full table-auto divide-y divide-gray-200 text-sm"
+  >
+    <!-- En-tête -->
+    <thead class="bg-gray-50">
+      <tr>
+        <th
+          *ngFor="let column of visibleColumns"
+          [style.width]="column.width || 'auto'"
+          [ngClass]="{
+            'text-left': column.align !== 'center',
+            'text-center': column.align === 'center'
+          }"
+          class="px-4 py-3 text-left font-semibold text-gray-600"
+        >
+          {{ getTranslatedLabel(column) }}
+        </th>
+      </tr>
+    </thead>
+
+    <!-- Corps du tableau -->
+    <tbody class="bg-white divide-y divide-gray-100">
+      <tr
+        *ngFor="let item of items; trackBy: trackByItem; let i = index"
+        class="transition duration-150 hover:bg-gray-50"
+      >
+        <td
+          *ngFor="let column of visibleColumns"
+          [style.width]="column.width || 'auto'"
+          [ngClass]="{
+            'text-left': column.align !== 'center',
+            'text-center': column.align === 'center'
+          }"
+          class="px-4 py-2 align-middle whitespace-nowrap"
+        >
+          <!-- ✅ Mode édition inline -->
+          <ng-container *ngIf="isEditMode && column.editable && column.key">
+            <!-- 🟢 TEXT -->
+            <input
+              *ngIf="column.editConfig?.type === 'text'"
+              type="text"
+              class="border border-gray-300 rounded px-2 py-1 w-full text-sm focus:ring focus:ring-blue-100"
+              [placeholder]="column.editConfig?.placeholder"
+              [disabled]="column.editConfig?.disabled"
+              [value]="getCellValue(item, column)"
+              (input)="onInlineEdit(item, column, $event)"
+            />
+
+            <!-- 🟢 NUMBER -->
+            <input
+              *ngIf="column.editConfig?.type === 'number'"
+              type="number"
+              class="border border-gray-300 rounded px-2 py-1 w-full text-sm focus:ring focus:ring-blue-100"
+              [min]="column.editConfig?.min"
+              [max]="column.editConfig?.max"
+              [step]="column.editConfig?.step"
+              [value]="getCellValue(item, column)"
+              (input)="onInlineEdit(item, column, $event)"
+            />
+
+            <!-- 🟢 DATE -->
+            <input
+              *ngIf="column.editConfig?.type === 'date'"
+              type="date"
+              class="border border-gray-300 rounded px-2 py-1 w-full text-sm focus:ring focus:ring-blue-100"
+              [value]="getCellValue(item, column)"
+              (change)="onInlineEdit(item, column, $event)"
+            />
+
+            <!-- 🟢 CHECKBOX -->
+            <input
+              *ngIf="column.editConfig?.type === 'checkbox'"
+              type="checkbox"
+              class="accent-blue-600"
+              [checked]="getCellValue(item, column)"
+              (change)="onInlineEdit(item, column, $event)"
+            />
+
+            <!-- 🟢 SELECT -->
+            <select
+              *ngIf="column.editConfig?.type === 'select'"
+              class="border border-gray-300 rounded px-2 py-1 w-full text-sm focus:ring focus:ring-blue-100"
+              [value]="getCellValue(item, column)"
+              (change)="onInlineEdit(item, column, $event)"
+            >
+              <option
+                *ngFor="let opt of column.editConfig?.options"
+                [value]="opt.value"
+              >
+                {{ opt.label }}
+              </option>
+            </select>
+
+            <!-- 🟢 TEXTAREA -->
+            <textarea
+              *ngIf="column.editConfig?.type === 'textarea'"
+              rows="2"
+              class="border border-gray-300 rounded px-2 py-1 w-full text-sm focus:ring focus:ring-blue-100"
+              [placeholder]="column.editConfig?.placeholder"
+              (input)="onInlineEdit(item, column, $event)"
+              >{{ getCellValue(item, column) }}</textarea
+            >
+          </ng-container>
+
+          <!-- ✅ Mode lecture seule -->
+          <ng-container *ngIf="!isEditMode || !column.editable">
+            <app-generic-datatable-cell
+              [index]="i"
+              [item]="item"
+              [column]="column"
+              [injector]="createInjector(column, item)"
+              (view)="view.emit($event)"
+              (edit)="update.emit($event)"
+              (delete)="delete.emit($event)"
+            ></app-generic-datatable-cell>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 🔹 État vide -->
+  <div
+    *ngIf="!isLoading && !hasError && items.length === 0"
+    class="w-full py-12 px-4 text-center"
+  >
+    <div class="flex flex-col items-center gap-4">
+      <div
+        class="h-20 w-20 bg-gray-100 rounded-full flex items-center justify-center"
+      >
+        <i [class]="emptyIcon + ' text-primary text-2xl'"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-gray-900">{{ emptyTitle }}</h3>
+      <p class="text-gray-600">{{ emptySubtitle }}</p>
+      <button
+        *ngIf="showCreateButton"
+        class="bg-primary text-white px-6 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition duration-200 flex items-center gap-2"
+        (click)="create.emit()"
+      >
+        <i class="fas fa-plus"></i>
+        {{ createLabel }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 🔹 Boutons de mode édition / sauvegarde -->
+<div *ngIf="editable" class="flex justify-end my-4">
+  <div class="flex items-center gap-3">
+    <!-- Loader de sauvegarde -->
+    <div *ngIf="isSaving" class="flex items-center text-gray-600 text-sm gap-2">
+      <div
+        role="status"
+        class="inline-block w-4 h-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em]"
+      ></div>
+      <span>{{ "datatable.saving" | transloco }}</span>
+    </div>
+
+    <!-- Bouton Éditer -->
+    <button
+      *ngIf="!isEditMode"
+      class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 text-sm flex items-center gap-2 rounded"
+      (click)="toggleEditMode()"
+    >
+      <i class="fas fa-edit"></i>
+      <span>{{ "datatable.edit" | transloco }}</span>
+    </button>
+
+    <!-- Bouton Annuler -->
+    <button
+      *ngIf="isEditMode"
+      [disabled]="!hasChanges || isSaving"
+      class="bg-gray-200 text-gray-500 px-3 py-1 text-sm flex items-center gap-2 rounded cursor-not-allowed disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300"
+      [class.hover:bg-gray-300]="hasChanges && !isSaving"
+      (click)="cancelAll()"
+    >
+      <i class="fas fa-times-circle"></i>
+      <span>{{ "datatable.cancel" | transloco }}</span>
+    </button>
+
+    <!-- Bouton Enregistrer -->
+    <button
+      *ngIf="isEditMode"
+      [disabled]="isSaving"
+      class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm flex items-center gap-2 rounded shadow"
+      (click)="saveAll()"
+    >
+      <i class="fas fa-save"></i>
+      <span>{{ "datatable.save" | transloco }}</span>
+    </button>
+  </div>
+</div>

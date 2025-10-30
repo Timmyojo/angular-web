@@ -1,0 +1,46 @@
+{
+  "title": "Gestionnaire de fichiers",
+  "close": "Fermer",
+  "tabs": { "library": "Médiathèque", "upload": "Téléverser" },
+  "filters": {
+    "type": {
+      "label": "Type de média",
+      "all": "Tous les médias",
+      "images": "Images",
+      "pdfs": "PDF"
+    },
+    "date": { "label": "Date", "all": "Toutes les dates" },
+    "search": { "label": "Rechercher", "placeholder": "Rechercher des médias…" }
+  },
+  "upload": {
+    "dropHere": "Glissez & déposez vos fichiers ici",
+    "chooseFile": "Choisir un fichier",
+    "hint": "Types acceptés : {{types}} • Taille max : {{size}} Mo",
+    "selectedFile": "Fichier sélectionné"
+  },
+  "library": { "itemAria": "Média {{name}}" },
+  "details": {
+    "preview": "Aperçu du fichier",
+    "filename": "Nom fichier",
+    "path": "Chemin",
+    "url": "URL",
+    "uploaderId": "Uploader ID",
+    "createdAt": "Créé le",
+    "updatedAt": "Modifié le",
+    "noneSelected": "Aucun fichier sélectionné."
+  },
+  "footer": { "oneSelected": "1 fichier sélectionné" },
+  "actions": {
+    "search": "Rechercher",
+    "upload": "Uploader",
+    "cancel": "Annuler",
+    "insert": "Insérer dans le contenu",
+    "clear": "Vider"
+  },
+  "common": {
+    "or": "ou",
+    "check": "✓",
+    "selected": "Sélectionné",
+    "bytes": "octets"
+  }
+}

@@ -1,0 +1,61 @@
+<!-- Bouton Upload -->
+<!-- *ngIf="!enablePreview && !choosedFile" -->
+<div
+  class="px-4 py-4 cursor-pointer rounded flex justify-center items-center gap-2"
+  [ngClass]="{
+    'text-gray-500  border border-gray-100  bg-gray-100 hover:bg-gray-200 ':
+      enablePreview
+  }"
+  (click)="openFileManager()"
+>
+  <i class="fas fa-upload"></i>
+  <!-- {{ choosedFile ? "Changer le fichier" : "Uploader un fichier" }} -->
+</div>
+
+<!-- Carte de prévisualisation si un fichier est sélectionné -->
+<div
+  *ngIf="choosedFile && enablePreview"
+  class="mt-4 p-4 rounded shadow-xs bg-white w-full max-w-sm mx-auto"
+>
+  <!-- Aperçu image -->
+  <ng-container *ngIf="choosedFile.mimetype.startsWith('image/')">
+    <img
+      [src]="choosedFile.url"
+      [alt]="choosedFile.originalName"
+      class="w-full h-auto rounded mb-3 border border-gray-200 max-h-[150px] object-cover"
+    />
+  </ng-container>
+
+  <!-- Aperçu fichier non-image -->
+  <ng-container *ngIf="!choosedFile.mimetype.startsWith('image/')">
+    <div class="flex items-center space-x-3 mb-3">
+      <img
+        [src]="choosedFile.url"
+        alt="Fichier"
+        class="w-8 h-8 object-contain border border-gray-200 rounded max-h-[150px] object-cover"
+      />
+      <span class="text-sm text-gray-800 truncate font-medium">
+        {{ choosedFile.originalName }}
+      </span>
+    </div>
+  </ng-container>
+
+  <!-- Infos fichier -->
+  <p class="text-sm text-gray-500 mb-1">
+    <strong>Type :</strong> {{ choosedFile.mimetype }}
+  </p>
+  <p class="text-sm text-gray-500 mb-4">
+    <strong>Taille :</strong> {{ humanSize(choosedFile.size) }}
+  </p>
+
+  <!-- Boutons d'action -->
+  <div class="flex justify-between items-center gap-2">
+    <button (click)="openFileManager()" class="w-full app-primary">
+      <i class="fas fa-edit"></i> Modifier
+    </button>
+    <button (click)="reset()" class="w-full">
+      <!-- <i class="fas fa-trash-alt"></i>  -->
+      Reset
+    </button>
+  </div>
+</div>

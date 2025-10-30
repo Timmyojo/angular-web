@@ -1,0 +1,46 @@
+{
+  "title": "File Manager",
+  "close": "Close",
+  "tabs": { "library": "Media Library", "upload": "Upload Files" },
+  "filters": {
+    "type": {
+      "label": "Media type",
+      "all": "All media items",
+      "images": "Images",
+      "pdfs": "PDFs"
+    },
+    "date": { "label": "Date", "all": "All dates" },
+    "search": { "label": "Search", "placeholder": "Search media items..." }
+  },
+  "upload": {
+    "dropHere": "Drag & drop your files here",
+    "chooseFile": "Choose a file",
+    "hint": "Allowed types: {{types}} • Max size: {{size}} MB",
+    "selectedFile": "Selected file"
+  },
+  "library": { "itemAria": "Media {{name}}" },
+  "details": {
+    "preview": "File preview",
+    "filename": "Filename",
+    "path": "Path",
+    "url": "URL",
+    "uploaderId": "Uploader ID",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "noneSelected": "No file selected."
+  },
+  "footer": { "oneSelected": "1 file selected" },
+  "actions": {
+    "search": "Search",
+    "upload": "Upload",
+    "cancel": "Cancel",
+    "insert": "Insert into content",
+    "clear": "Clear"
+  },
+  "common": {
+    "or": "or",
+    "check": "✓",
+    "selected": "Selected",
+    "bytes": "bytes"
+  }
+}

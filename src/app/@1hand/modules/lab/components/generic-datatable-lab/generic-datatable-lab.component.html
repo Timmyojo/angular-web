@@ -1,0 +1,29 @@
+<app-generic-datatable
+  [items]="items"
+  [columns]="datatableColumns"
+  [isLoading]="false"
+  [hasError]="false"
+  [showCreateButton]="true"
+  emptyIcon="fas fa-building"
+  emptyTitle="Aucune entreprise trouvée"
+  emptySubtitle="Ajoutez votre première entreprise"
+  createLabel="Ajouter une entreprise"
+  createLabel="Ajouter une entreprise"
+  (onCreate)="handleCreate()"
+  (onView)="handleView($event)"
+  (onUpdate)="handleUpdate($event)"
+  (onDelete)="handleDelete($event)"
+></app-generic-datatable>
+
+<!-- Template personnalisé -->
+<ng-template #statusTemplate let-item>
+  <span
+    class="px-3 py-1 rounded-full text-xs font-semibold"
+    [ngClass]="{
+      'bg-green-100 text-green-700': item.status === 'active',
+      'bg-red-100 text-red-700': item.status !== 'active'
+    }"
+  >
+    {{ item.status }}
+  </span>
+</ng-template>

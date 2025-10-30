@@ -1,0 +1,375 @@
+<ng-container *transloco="let t; read: 'genericfilemanager'">
+  <div
+    class="h-[90vh] flex flex-col rounded-lg shadow-lg overflow-hidden bg-white"
+  >
+    <!-- HEADER -->
+    <div
+      class="border-b border-gray-300 bg-gray-50 px-4 py-3 flex items-center justify-between"
+    >
+      <h2 class="text-lg font-semibold text-gray-700">
+        {{ t("title") }}
+      </h2>
+      <div
+        class="text-gray-500 hover:text-red-600 transition"
+        (click)="closeModal()"
+        [attr.title]="t('close')"
+      >
+        <i class="fas fa-times text-xl"></i>
+      </div>
+    </div>
+
+    <!-- BODY (scroll interne) -->
+    <div class="flex-1 min-h-0 flex flex-col">
+      <!-- Tabs -->
+      <div
+        class="border-b border-gray-300 border-gray-300 border-gray-300 bg-white flex flex-wrap gap-1 px-2"
+      >
+        <div
+          class="cursor-pointer py-2 text-sm font-medium border-b-2 transition-colors"
+          [class.border-[#1d9bed]]="activeTab === 'library'"
+          [class.text-[#1d9bed]]="activeTab === 'library'"
+          [class.border-transparent]="activeTab !== 'library'"
+          [class.text-gray-500]="activeTab !== 'library'"
+          (click)="setTab('library')"
+        >
+          {{ t("tabs.library") }}
+        </div>
+        <div
+          class="cursor-pointer px-4 py-2 text-sm font-medium border-b-2 transition-colors"
+          [class.border-[#1d9bed]]="activeTab === 'upload'"
+          [class.text-[#1d9bed]]="activeTab === 'upload'"
+          [class.border-transparent]="activeTab !== 'upload'"
+          [class.text-gray-500]="activeTab !== 'upload'"
+          (click)="setTab('upload')"
+        >
+          {{ t("tabs.upload") }}
+        </div>
+      </div>
+
+      <!-- LIBRARY: Filtres + Recherche -->
+      <div
+        *ngIf="activeTab === 'library'"
+        class="p-4 border-b border-gray-300 border-gray-300 bg-gray-50 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+      >
+        <div
+          class="flex sm:flex-row gap-3 items-stretch sm:items-center text-sm w-full md:w-auto"
+        >
+          <select
+            class="border border-gray-300 rounded px-2 py-1 text-sm w-full sm:w-auto"
+            [(ngModel)]="filters.type"
+            (change)="onReload()"
+            [attr.aria-label]="t('filters.type.label')"
+          >
+            <option value="all">{{ t("filters.type.all") }}</option>
+            <option value="image">{{ t("filters.type.images") }}</option>
+            <option value="pdf">{{ t("filters.type.pdfs") }}</option>
+          </select>
+          <select
+            class="border border-gray-300 rounded px-2 py-1 text-sm w-full sm:w-auto"
+            [(ngModel)]="filters.date"
+            (change)="onReload()"
+            [attr.aria-label]="t('filters.date.label')"
+          >
+            <option value="all">{{ t("filters.date.all") }}</option>
+          </select>
+        </div>
+
+        <!--
+        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+          <input
+            type="text"
+            [attr.placeholder]="t('filters.search.placeholder')"
+            class="border border-gray-300 rounded px-3 py-1 text-sm w-full sm:w-64"
+            [(ngModel)]="filters.q"
+            (keyup.enter)="onReload()"
+            [attr.aria-label]="t('filters.search.label')"
+          />
+          <button
+            class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 w-full sm:w-auto"
+            (click)="onReload()"
+          >
+            {{ t('actions.search') }}
+          </button>
+        </div>
+        -->
+      </div>
+
+      <!-- UPLOAD -->
+      <div
+        *ngIf="activeTab === 'upload'"
+        class="flex-1 min-h-0 flex flex-col justify-center items-center overflow-y-auto p-4 md:p-6 bg-gray-50"
+      >
+        <div
+          class="mx-auto min-w-[70%] min-h-[70%] rounded-lg border-2 border-dashed border-gray-300 bg-white p-6 md:p-8 text-center overflow-auto"
+          [class.border-blue-400]="dragging"
+          [class.bg-blue-50]="dragging"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <p class="text-gray-700 font-medium">
+            {{ t("upload.dropHere") }}
+          </p>
+          <p class="text-xs text-gray-500 mt-1">{{ t("common.or") }}</p>
+
+          <div class="mt-4">
+            <button
+              (click)="fileInput.click()"
+              class="app-primary"
+              [disabled]="uploading"
+            >
+              {{ t("upload.chooseFile") }}
+              <input
+                id="fileInput"
+                type="file"
+                class="hidden"
+                (change)="onFileSelected($event)"
+                [attr.accept]="acceptAttr"
+                #fileInput
+              />
+            </button>
+          </div>
+
+          <p class="text-xs text-gray-400 mt-3">
+            {{
+              t("upload.hint", {
+                types: allowedTypes.join(", "),
+                size: maxSizeMB
+              })
+            }}
+          </p>
+
+          <!-- Fichier sélectionné -->
+          <div *ngIf="pendingFile" class="mt-4 text-sm text-gray-600">
+            <span class="font-medium">{{ t("upload.selectedFile") }} :</span>
+            {{ pendingFile.name }} ({{ humanSize(pendingFile.size) }})
+          </div>
+
+          <!-- Progress -->
+          <div
+            *ngIf="uploadProgress !== null"
+            class="mt-4 w-full max-w-xl mx-auto"
+          >
+            <div class="w-full bg-gray-200 rounded h-2 overflow-hidden">
+              <div
+                class="bg-blue-600 h-2"
+                [style.width.%]="uploadProgress"
+              ></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">{{ uploadProgress }}%</p>
+          </div>
+
+          <!-- Erreur -->
+          <p *ngIf="uploadError" class="mt-3 text-sm text-red-600">
+            {{ uploadError }}
+          </p>
+
+          <!-- Actions -->
+          <div class="mt-4 flex justify-center gap-2">
+            <button
+              class="app-primary"
+              [disabled]="!pendingFile || uploading"
+              (click)="onStartUpload(pendingFile)"
+            >
+              {{ t("actions.upload") }}
+            </button>
+            <button
+              [disabled]="!pendingFile || uploading"
+              (click)="onCancelPending()"
+            >
+              {{ t("actions.cancel") }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIBRARY: Grille + Détails -->
+      <div
+        *ngIf="activeTab === 'library'"
+        class="flex-1 min-h-0 flex md:flex-row overflow-hidden"
+      >
+        <!-- GRILLE -->
+        <div
+          class="w-full md:w-2/3 lg:w-3/4 p-3 md:p-4 border-r border-gray-300 overflow-y-auto min-h-0"
+        >
+          <div
+            class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4"
+          >
+            <div
+              *ngFor="let file of files"
+              class="group relative rounded-lg border border-gray-300 bg-white transition overflow-hidden"
+              [ngClass]="{ 'ring-2 ring-[#1d9bed]': file === selectedFile }"
+              (click)="selectFile(file)"
+              [attr.aria-label]="
+                t('library.itemAria', { name: file.originalName })
+              "
+            >
+              <!-- Thumb à ratio fixe -->
+              <div
+                class="aspect-[4/3] w-full overflow-hidden bg-gray-50 flex items-center justify-center"
+              >
+                <ng-container [ngSwitch]="getFileType(file)">
+                  <!-- Image -->
+                  <img
+                    *ngSwitchCase="'image'"
+                    [src]="file.url"
+                    class="h-full w-full object-cover"
+                    [alt]="file.originalName"
+                  />
+                  <!-- PDF -->
+                  <div
+                    *ngSwitchCase="'pdf'"
+                    class="flex flex-col items-center justify-center text-red-600"
+                  >
+                    <i class="fas fa-file-pdf text-3xl sm:text-4xl"></i>
+                  </div>
+                  <!-- Autres -->
+                  <div
+                    *ngSwitchDefault
+                    class="flex flex-col items-center justify-center text-gray-500"
+                  >
+                    <i class="fas fa-file text-3xl sm:text-4xl"></i>
+                  </div>
+                </ng-container>
+              </div>
+
+              <!-- Nom -->
+              <div class="px-2 py-1">
+                <p
+                  class="text-[11px] sm:text-xs text-gray-700 truncate"
+                  [title]="file.originalName"
+                >
+                  {{ file.originalName }}
+                </p>
+              </div>
+
+              <!-- Check sélection -->
+              <div
+                *ngIf="file === selectedFile"
+                class="absolute top-1 left-1 w-8 h-8 bg-[#1d9bed] text-white text-[10px] flex items-center justify-center rounded-xs"
+                [attr.aria-label]="t('common.selected')"
+              >
+                <i class="fa fa-check text-lg" aria-hidden="true"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DÉTAILS -->
+        <div
+          class="w-full md:w-1/3 lg:w-1/4 p-4 text-sm overflow-y-auto min-h-0 border-t md:border-t-0 md:border-l border-gray-200 bg-white"
+        >
+          <ng-container *ngIf="selectedFile; else noFile">
+            <!-- Aperçu image -->
+            <img
+              *ngIf="selectedFile.mimetype.startsWith('image/')"
+              [src]="selectedFile.url"
+              class="w-full h-auto rounded mb-3 border border-gray-300 max-h-[150px] object-cover"
+              [attr.alt]="selectedFile.originalName"
+            />
+
+            <!-- Icône si pas image -->
+            <div
+              *ngIf="!selectedFile.mimetype.startsWith('image/')"
+              class="flex flex-col items-center justify-center w-full h-[150px] border border-gray-300 rounded mb-3"
+              [attr.aria-label]="t('details.preview')"
+            >
+              <i
+                [ngClass]="{
+                  'fas fa-file-pdf text-red-600 text-5xl':
+                    selectedFile.mimetype === 'application/pdf',
+                  'fas fa-file-word text-[#1d9bed] text-5xl':
+                    selectedFile.mimetype.includes('word') ||
+                    selectedFile.mimetype === 'application/msword',
+                  'fas fa-file-excel text-green-600 text-5xl':
+                    selectedFile.mimetype.includes('sheet') ||
+                    selectedFile.mimetype.includes('excel'),
+                  'fas fa-file-powerpoint text-orange-500 text-5xl':
+                    selectedFile.mimetype.includes('presentation') ||
+                    selectedFile.mimetype.includes('powerpoint'),
+                  'fas fa-file-video text-purple-600 text-5xl':
+                    selectedFile.mimetype.startsWith('video/'),
+                  'fas fa-file text-gray-500 text-5xl': true
+                }"
+              ></i>
+              <span class="text-xs mt-2 text-center px-1 truncate w-full">
+                {{ selectedFile.originalName }}
+              </span>
+            </div>
+
+            <!-- Infos -->
+            <p class="font-semibold text-gray-800 break-words mb-1">
+              {{ selectedFile.originalName }}
+            </p>
+            <p class="text-xs text-gray-500 mb-1">
+              {{ selectedFile.mimetype }}
+              <span *ngIf="selectedFile.width && selectedFile.height">
+                • {{ selectedFile.width }}×{{ selectedFile.height }} px
+              </span>
+              • {{ humanSize(selectedFile.size) }}
+              <!-- {{ t("common.bytes") }} -->
+            </p>
+            <p class="text-xs text-gray-500 mb-1">
+              <strong>{{ t("details.filename") }} :</strong>
+              {{ selectedFile.filename }}
+            </p>
+            <p class="text-xs text-gray-500 mb-1 break-all">
+              <strong>{{ t("details.path") }} :</strong> {{ selectedFile.path }}
+            </p>
+            <p class="text-xs text-gray-500 mb-1 break-all">
+              <strong>{{ t("details.url") }} :</strong>
+              <a
+                *ngIf="selectedFile.url"
+                [href]="selectedFile.url"
+                class="text-[#1d9bed] hover:underline"
+                target="_blank"
+              >
+                {{ selectedFile.url }}
+              </a>
+            </p>
+            <p class="text-xs text-gray-500 mb-1">
+              <strong>{{ t("details.uploaderId") }} :</strong>
+              {{ selectedFile.uploadedById ?? "—" }}
+            </p>
+            <p class="text-xs text-gray-500 mb-1">
+              <strong>{{ t("details.createdAt") }} :</strong>
+              {{ selectedFile.createdAt | date : "medium" }}
+            </p>
+            <p class="text-xs text-gray-500">
+              <strong>{{ t("details.updatedAt") }} :</strong>
+              {{ selectedFile.updatedAt | date : "medium" }}
+            </p>
+          </ng-container>
+
+          <ng-template #noFile>
+            <p class="text-gray-500">{{ t("details.noneSelected") }}</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div
+      class="flex flex-col sm:flex-row-reverse gap-3 sm:gap-0 sm:justify-between sm:items-center px-4 py-3 border-t border-gray-300 bg-gray-50"
+    >
+      <div class="text-sm text-gray-500 order-2 sm:order-1">
+        <span *ngIf="selectedFile">{{ t("footer.oneSelected") }}</span>
+        <a
+          *ngIf="selectedFile"
+          href="#"
+          class="ml-2 text-[#1d9bed] hover:underline"
+          (click)="clearSelection($event)"
+        >
+          {{ t("actions.clear") }}
+        </a>
+      </div>
+      <button
+        class="app-primary"
+        [disabled]="!selectedFile"
+        (click)="insertSelectedFile()"
+      >
+        {{ t("actions.insert") }}
+      </button>
+    </div>
+  </div>
+</ng-container>

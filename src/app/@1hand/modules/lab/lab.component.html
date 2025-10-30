@@ -1,0 +1,249 @@
+<!-- FICHE D'INSCRIPTION – Tailwind-only template -->
+<div
+  class="xw-[210mm] min-h-[297mm] mx-auto bg-white text-gray-900 p-8 print:p-8"
+>
+  <!-- Header row: ministries / republic -->
+  <!-- <div class="flex items-start justify-between text-xs leading-tight">
+    <div class="space-y-0.5">
+      <p class="font-semibold uppercase">
+        MINISTERE DE L’ENSEIGNEMENT SECONDAIRE
+      </p>
+      <p class="font-semibold uppercase">ET DE LA RECHERCHE SCIENTIFIQUE</p>
+    </div>
+    <div class="text-right space-y-0.5">
+      <p class="font-semibold uppercase">REPUBLIQUE DE CÔTE D’IVOIRE</p>
+      <p class="uppercase text-[11px] tracking-wide">
+        Union - Discipline - Travail
+      </p>
+    </div>
+  </div> -->
+
+  <!-- University brand -->
+  <div class="mt-6 text-center">
+    <!-- Optional logo -->
+    <img
+      *ngIf="fiche?.logoUrl"
+      [src]="fiche.logoUrl"
+      alt="UVCI"
+      class="h-10 mx-auto mb-2"
+    />
+    <h1 class="text-xl font-extrabold tracking-wide uppercase">
+      <!-- Université Virtuelle de Côte d’Ivoire -->
+    </h1>
+    <div class="mt-2 border-t border-gray-300"></div>
+  </div>
+
+  <!-- Big title -->
+  <div class="mt-6">
+    <div class="border border-gray-900 rounded-md py-2 text-center">
+      <span class="text-lg font-extrabold tracking-wide uppercase"
+        >Fiche d’inscription</span
+      >
+    </div>
+  </div>
+
+  <!-- Academic year -->
+  <div class="mt-6">
+    <p class="text-sm">
+      <span class="font-extrabold uppercase">Année universitaire :</span>
+      <span class="ml-2 font-semibold">{{
+        fiche?.anneeUniversitaire || "2022 - 2023"
+      }}</span>
+    </p>
+  </div>
+
+  <!-- Identité -->
+  <section class="mt-5">
+    <h2 class="text-sm font-extrabold uppercase">Identité</h2>
+
+    <div class="mt-2 grid grid-cols-12 gap-x-4 gap-y-1 text-[13px]">
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-40 font-semibold">Matricule MESRS :</span>
+        <span class="flex-1">{{
+          fiche?.identite?.matricule || "SEDJ1406010001"
+        }}</span>
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-20 font-semibold">Nom :</span>
+        <span class="flex-1 uppercase">{{
+          fiche?.identite?.nom || "SEDEGNON"
+        }}</span>
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-24 font-semibold">Prénoms :</span>
+        <span class="flex-1 uppercase">{{
+          fiche?.identite?.prenoms || "JOSUE GUY-ARNAUD"
+        }}</span>
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-44 font-semibold">Date et lieu de naissance :</span>
+        <span class="flex-1">
+          {{ fiche?.identite?.dateNaissance || "14-06-2001" }} à
+          {{ fiche?.identite?.lieuNaissance || "ABOBO" }}
+        </span>
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-28 font-semibold">Nationalité :</span>
+        <span class="flex-1 uppercase">{{
+          fiche?.identite?.nationalite || "IVOIRIENNE"
+        }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Inscription -->
+  <section class="mt-6">
+    <h2 class="text-sm font-extrabold uppercase">Inscription</h2>
+
+    <div class="mt-2 grid grid-cols-12 gap-x-4 gap-y-1 text-[13px]">
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-28 font-semibold">Filière :</span>
+        <span class="flex-1 uppercase">
+          {{
+            fiche?.inscription?.filiere ||
+              "INFORMATIQUE ET SCIENCES DU NUMERIQUE"
+          }}
+        </span>
+      </div>
+
+      <div class="col-span-12 flex">
+        <span class="w-16 font-semibold">Niveau :</span>
+        <span class="flex-1">
+          {{ fiche?.inscription?.niveau || "MASTER 1 - SEMESTRE 1 & 2" }}
+          <span class="ml-2 font-semibold">&nbsp;| Spécialité :</span>
+          <span class="uppercase">
+            {{
+              fiche?.inscription?.specialite ||
+                "CYBERSECURITE ET INTERNET DES OBJETS (CIO)"
+            }}
+          </span>
+        </span>
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 flex">
+        <span class="w-36 font-semibold">Type formation :</span>
+        <span class="flex-1 uppercase">{{
+          fiche?.inscription?.typeFormation || "FORMATION INITIALE"
+        }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Payment table -->
+  <section class="mt-6">
+    <div class="overflow-hidden rounded-md border border-gray-300">
+      <div class="bg-amber-100 text-[13px]">
+        <div class="grid grid-cols-12">
+          <div
+            class="col-span-4 px-3 py-2 font-semibold border-r border-gray-300"
+          >
+            Session semestrielle
+          </div>
+          <div
+            class="col-span-2 px-3 py-2 font-semibold border-r border-gray-300"
+          >
+            Semestre
+          </div>
+          <div
+            class="col-span-3 px-3 py-2 font-semibold border-r border-gray-300"
+          >
+            Code de paiement
+          </div>
+          <div
+            class="col-span-2 px-3 py-2 font-semibold border-r border-gray-300"
+          >
+            Montant
+          </div>
+          <div class="col-span-1 px-3 py-2 font-semibold">Date</div>
+        </div>
+      </div>
+
+      <div class="text-[13px]">
+        <div class="grid grid-cols-12">
+          <div class="col-span-4 px-3 py-2 border-t border-gray-300">
+            {{ fiche?.paiement?.session || "Rentrée de septembre 2022 - 2023" }}
+          </div>
+          <div class="col-span-2 px-3 py-2 border-t border-l border-gray-300">
+            {{ fiche?.paiement?.semestre || "MASTER 1 - SEMESTRE 1 & 2" }}
+          </div>
+          <div
+            class="col-span-3 px-3 py-2 border-t border-l border-gray-300 font-mono"
+          >
+            {{ fiche?.paiement?.code || "IDK23633D9A81957EE" }}
+          </div>
+          <div
+            class="col-span-2 px-3 py-2 border-t border-l border-gray-300 font-semibold"
+          >
+            {{ fiche?.paiement?.montant || "60.000 F" }}
+          </div>
+          <div class="col-span-1 px-3 py-2 border-t border-l border-gray-300">
+            {{ fiche?.paiement?.date || "26-10-2022" }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer with QR + signature/date -->
+  <div class="mt-8 flex items-end justify-end">
+    <!-- Date + sign block -->
+    <div class="text-right text-[13px]">
+      <p>
+        Fait Abidjan le
+        <span class="font-semibold">{{
+          fiche?.dateEdition || "12 Janvier 2023"
+        }}</span>
+      </p>
+      <p class="mt-6 text-xs leading-snug">
+        <span class="font-semibold">La Sous-Directrice de la Scolarité,</span
+        ><br />
+        <span>des Services Juridiques et de la Communication</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="p-16">
+  <h1 class="text-gray-800 text-4xl mb-8">1Hand Lab</h1>
+
+  <main class="flex flex-col gap-4">
+    <app-generic-datatable-lab></app-generic-datatable-lab>
+
+    <app-generic-file-manager
+      [files]="files"
+      [selectedFile]="selectedFile"
+      [choosedFile]="choosedFile"
+      [uploading]="uploading"
+      [uploadProgress]="uploadProgress"
+      [uploadError]="uploadError"
+      [uploadedById]="currentUserId"
+      [activeTab]="activeTab"
+      [allowedTypes]="['image/jpeg', 'image/png', 'application/pdf']"
+      [maxSizeMB]="5"
+      (load)="onLoadFiles()"
+      (startUpload)="onStartUpload($event)"
+      (tabChange)="activeTab = $event"
+      (select)="selectedFile = $event"
+      (clear)="selectedFile = null"
+      (insert)="onInsert()"
+      (close)="onClose()"
+    ></app-generic-file-manager>
+
+    <form [formGroup]="form" class="space-y-4">
+      <label class="block text-sm font-medium">Contenu</label>
+      <app-generic-text-editor
+        formControlName="content"
+        (valueChange)="onEditorChange($event)"
+      >
+      </app-generic-text-editor>
+
+      <button class="px-4 py-2 rounded-xl bg-blue-600 text-white">
+        Enregistrer
+      </button>
+    </form>
+  </main>
+</div>

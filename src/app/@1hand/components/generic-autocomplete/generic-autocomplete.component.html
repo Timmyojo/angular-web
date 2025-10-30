@@ -1,0 +1,38 @@
+<div
+  class="select-wrapper"
+  (click)="onComponentClick($event)"
+  [class.open]="dropdownOpen"
+>
+  <!-- Select-style display -->
+  <div class="select-display" tabindex="0" (blur)="onBlur()">
+    <span>{{ selectedItem ? displayFn(selectedItem) : placeholder }}</span>
+    <i class="fa fa-chevron-down icon"></i>
+  </div>
+
+  <!-- Dropdown -->
+  <div class="dropdown" *ngIf="dropdownOpen" (click)="$event.stopPropagation()">
+    <!-- Filter input -->
+    <div class="dropdown-filter-wrapper">
+      <input
+        type="text"
+        class="dropdown-filter"
+        placeholder="Filtrer..."
+        [value]="inputValue"
+        (click)="$event.stopPropagation()"
+        (input)="onNativeInput($event)"
+      />
+    </div>
+
+    <!-- Filtered options -->
+    <ul class="dropdown-list">
+      <li class="dropdown-item" *ngIf="filteredItems.length === 0">No item</li>
+      <li
+        *ngFor="let item of filteredItems"
+        class="dropdown-item"
+        (click)="onItemClick(item, $event)"
+      >
+        {{ displayFn(item) }}
+      </li>
+    </ul>
+  </div>
+</div>

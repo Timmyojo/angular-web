@@ -1,0 +1,14 @@
+/* Si ton projet utilise Tailwind en SCSS, tu peux laisser ces classes globales
+   dans styles.scss plutôt que localement, pour affecter tous les éditeurs. */
+:host {
+  display: block;
+}
+
+button {
+  min-width: fit-content !important;
+  border-radius: 0 !important;
+}
+
+// .ql-editor {
+//   @apply min-h-[300px];
+// }

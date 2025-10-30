@@ -1,0 +1,238 @@
+<form
+  *transloco="let t; read: transationNamespace"
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="form-wrapper"
+>
+  <ng-container *transloco="let tCore">
+    <ng-container *ngFor="let fieldset of fieldsets">
+      <section class="mb-10">
+        <!-- Titre du fieldset -->
+        <h2
+          *ngIf="fieldset.fieldset !== 'Default'"
+          class="text-lg font-semibold mb-4 capitalize"
+        >
+          {{ t(fieldset.fieldset) }}
+        </h2>
+
+        <!-- Grille par fieldset -->
+        <div class="form-grid gap-4" [ngClass]="getFieldsetGridClass(fieldset)">
+          <ng-container *ngFor="let field of fieldset.fields">
+            <div [ngClass]="getFieldSizeClasses(field.size)" class="form-field">
+              <!-- Label (sauf checkbox) -->
+              <label
+                *ngIf="field.type !== 'checkbox'"
+                class="form-label"
+                [attr.for]="field.name"
+              >
+                {{ t(field.label) }}
+                <span *ngIf="field.required" class="text-red-400 text-lg"
+                  >*</span
+                >
+              </label>
+
+              <!-- Champs dynamiques -->
+              <ng-container [ngSwitch]="field.type">
+                <!-- Checkbox -->
+                <label *ngSwitchCase="'checkbox'" class="flex items-center">
+                  <input
+                    type="checkbox"
+                    [formControlName]="field.name"
+                    [id]="field.name"
+                    class="form-input p-0 m-0"
+                    [class.form-input-error]="isFieldInvalid(field.name)"
+                  />
+                  {{ t(field.label) }}
+                </label>
+
+                <!-- Texte -->
+                <input
+                  *ngSwitchCase="'string'"
+                  type="text"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- Email -->
+                <input
+                  *ngSwitchCase="'email'"
+                  type="email"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- URL -->
+                <input
+                  *ngSwitchCase="'url'"
+                  type="url"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- Textarea -->
+                <textarea
+                  *ngSwitchCase="'textarea'"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [rows]="field.rows || 3"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                ></textarea>
+
+                <!-- Téléphone -->
+                <ngx-intl-tel-input
+                  *ngSwitchCase="'phone'"
+                  [preferredCountries]="[
+                    CountryISO.UnitedStates,
+                    CountryISO.Cameroon
+                  ]"
+                  [enableAutoCountrySelect]="true"
+                  [enablePlaceholder]="true"
+                  [searchCountryFlag]="true"
+                  [searchCountryField]="[SearchCountryField.Name]"
+                  [selectFirstCountry]="false"
+                  [selectedCountryISO]="CountryISO.Cameroon"
+                  [phoneValidation]="true"
+                  [separateDialCode]="true"
+                  [formControl]="getFormControl(field.name)"
+                  class="form-input"
+                ></ngx-intl-tel-input>
+
+                <!-- Mot de passe -->
+                <input
+                  *ngSwitchCase="'password'"
+                  type="password"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- Nombre -->
+                <input
+                  *ngSwitchCase="'number'"
+                  type="number"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- Select -->
+                <select
+                  *ngSwitchCase="'select'"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [attr.multiple]="field.multiple ? '' : null"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                >
+                  <option *ngIf="!field.multiple" value="" disabled hidden>
+                    {{ t(field.placeholder || field.label) }}
+                  </option>
+                  <option
+                    *ngFor="let option of field.options"
+                    [value]="option.value"
+                  >
+                    {{ t(option.label) }}
+                  </option>
+                </select>
+
+                <!-- Autocomplete -->
+                <app-generic-autocomplete
+                  *ngSwitchCase="'autocomplete'"
+                  [formControl]="getFormControl(field.name)"
+                  [items]="field.options || []"
+                  [displayFn]="field.displayFn || defaultDisplayFn"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [disabled]="!!field.disabled"
+                ></app-generic-autocomplete>
+
+                <!-- Date -->
+                <input
+                  *ngSwitchCase="'date'"
+                  type="date"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- DateTime -->
+                <input
+                  *ngSwitchCase="'datetime'"
+                  type="datetime-local"
+                  [formControlName]="field.name"
+                  [id]="field.name"
+                  [disabled]="!!field.disabled"
+                  class="form-input"
+                  [class.form-input-error]="isFieldInvalid(field.name)"
+                />
+
+                <!-- Fichier -->
+                <input
+                  *ngSwitchCase="'file'"
+                  type="file"
+                  [id]="field.name"
+                  (change)="onFileChange($event, field)"
+                  [accept]="field.acceptedFileExtensions?.join(',')"
+                  [multiple]="field.multiple"
+                  class="form-input"
+                />
+
+                <!-- Richtext -->
+                <app-generic-text-editor
+                  *ngSwitchCase="'richtext'"
+                  [formControl]="getFormControl(field.name)"
+                  [placeholder]="field.placeholder ? t(field.placeholder) : ''"
+                  [readOnly]="!!field.editorOptions?.readOnly"
+                  [class.sticky-toolbar]="field.editorOptions?.toolbarSticky"
+                  [style.--editor-min-height]="
+                    (field.editorOptions?.minHeight || 420) + 'px'
+                  "
+                ></app-generic-text-editor>
+
+                <!-- Champ inconnu -->
+                <div *ngSwitchDefault class="form-error">
+                  {{ tCore("formErrors.unknownFieldType") }}
+                </div>
+              </ng-container>
+
+              <!-- Erreurs -->
+              <div *ngIf="isFieldInvalid(field.name)" class="form-error">
+                {{ t(getFirstErrorMessage(field)) }}
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- Bouton d’action -->
+    <div class="form-actions mt-8" *ngIf="showActionButton">
+      <button [disabled]="isLoading" type="submit" class="app-primary">
+        {{ tCore("general.save") }} {{ isLoading ? "..." : "" }}
+      </button>
+    </div>
+  </ng-container>
+</form>

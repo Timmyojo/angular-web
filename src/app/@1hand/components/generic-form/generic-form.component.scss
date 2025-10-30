@@ -1,0 +1,92 @@
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.form-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  width: 100%;
+}
+
+.form-input-error {
+  border-color: #dc2626; // rouge
+}
+
+.form-error {
+  color: #dc2626;
+  margin-top: 0.25rem;
+}
+
+input.ng-invalid.ng-touched:focus,
+select.ng-invalid.ng-touched:focus,
+textarea.ng-invalid.ng-touched:focus {
+  border-color: #dc2626 !important; // rouge
+  box-shadow: 0 0 0 1px #dc2626 !important;
+  outline: none !important;
+}
+
+.form-actions button {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+/* Par défaut : col-1 à col-12 */
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    grid-column: span #{$i};
+  }
+}
+
+/* sm breakpoint */
+@media (min-width: 640px) {
+  @for $i from 1 through 12 {
+    .col-sm-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+/* md breakpoint */
+@media (min-width: 768px) {
+  @for $i from 1 through 12 {
+    .col-md-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+/* lg breakpoint */
+@media (min-width: 1024px) {
+  @for $i from 1 through 12 {
+    .col-lg-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+}
+
+/* xl breakpoint */
+@media (min-width: 1280px) {
+  @for $i from 1 through 12 {
+    .col-xl-#{$i} {
+      grid-column: span #{$i};
+    }
+  }
+}

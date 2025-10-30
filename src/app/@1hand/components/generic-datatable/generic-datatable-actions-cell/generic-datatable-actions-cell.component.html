@@ -1,0 +1,55 @@
+<div
+  class="flex gap-2 text-gray-500"
+  *ngIf="
+    canView ||
+    canEdit ||
+    canDelete ||
+    (customActions && customActions.length > 0)
+  "
+>
+  <!-- Voir -->
+  <span
+    *ngIf="canView"
+    title="Voir"
+    class="cursor-pointer bg-gray-100 px-3 p-2 rounded-sm hover:text-white hover:bg-blue-500 transition"
+    (click)="onView()"
+  >
+    <i class="fas fa-eye"></i>
+  </span>
+
+  <!-- Éditer -->
+  <span
+    *ngIf="canEdit"
+    title="Éditer"
+    class="cursor-pointer bg-gray-100 px-3 p-2 rounded-sm hover:text-white hover:bg-green-500 transition"
+    (click)="onEdit()"
+  >
+    <i class="fas fa-edit"></i>
+  </span>
+
+  <!-- Supprimer -->
+  <span
+    *ngIf="canDelete"
+    title="Supprimer"
+    class="cursor-pointer bg-gray-200 px-3 p-2 rounded-sm text-red-400 hover:text-white hover:bg-red-400 transition"
+    (click)="onDelete()"
+  >
+    <i class="fas fa-trash"></i>
+  </span>
+
+  <!-- Actions personnalisées -->
+  <ng-container *ngFor="let action of customActions">
+    <span
+      *ngIf="isActionVisible(action)"
+      [title]="action.title"
+      [class]="
+        'cursor-pointer bg-gray-100 px-3 p-2 rounded-sm hover:text-white transition ' +
+        getActionColorClass(action.color)
+      "
+      (click)="onCustomAction(action)"
+    >
+      <i [class]="action.icon"></i>
+      <span *ngIf="action.text" class="ml-1">{{ action.text }}</span>
+    </span>
+  </ng-container>
+</div>

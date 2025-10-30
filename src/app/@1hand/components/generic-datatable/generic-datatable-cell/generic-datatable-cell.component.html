@@ -1,0 +1,74 @@
+<!-- 1. render (composant dynamique) -->
+<ng-container *ngIf="column.render; else checkTemplate">
+  <ng-container
+    *ngComponentOutlet="column.render; injector: createInjector()"
+  />
+</ng-container>
+
+<!-- 2. template personnalisé -->
+<ng-template #checkTemplate>
+  <ng-container *ngIf="column.template; else checkList">
+    <ng-container
+      *ngTemplateOutlet="column.template; context: { $implicit: item }"
+    ></ng-container>
+  </ng-container>
+</ng-template>
+
+<!-- 3. renderList -->
+<ng-template #checkList>
+  <ng-container *ngIf="column.renderList; else checkRenderValue">
+    <ul class="list-disc list-inside text-gray-800 space-y-1">
+      <li *ngFor="let val of column.renderList(item)">
+        {{ val }}
+      </li>
+    </ul>
+  </ng-container>
+</ng-template>
+
+<!-- 4. renderValue -->
+<ng-template #checkRenderValue>
+  <ng-container *ngIf="column.renderValue; else checkKey">
+    {{ column.renderValue(item, index) }}
+  </ng-container>
+</ng-template>
+
+<!-- 5. key fallback -->
+<ng-template #checkKey>
+  <ng-container *ngIf="column.key; else defaultActions">
+    {{ getCellValue() }}
+  </ng-container>
+</ng-template>
+
+<!-- 6. actions -->
+<ng-template #defaultActions>
+  <ng-container *ngIf="hasAction()">
+    <!-- <div class="flex justify-center items-center gap-4" >
+    <i
+      *ngIf="column.canView"
+      class="text-primary fas fa-eye cursor-pointer"
+      (click)="handleView()"
+    ></i>
+    <i
+      *ngIf="column.canEdit"
+      class="text-primary fas fa-edit cursor-pointer"
+      (click)="handleEdit()"
+    ></i>
+    <i
+      *ngIf="column.canDelete"
+      class="fas fa-trash-alt text-red-500 cursor-pointer"
+      (click)="handleDelete()"
+    ></i>
+  </div> -->
+
+    <app-generic-datatable-actions-cell
+      [item]="item"
+      [canView]="column.canView"
+      [canEdit]="column.canEdit"
+      [canDelete]="column.canDelete"
+      [customActions]="column.customActions"
+      (view)="handleView()"
+      (edit)="handleEdit()"
+      (delete)="handleDelete()"
+    />
+  </ng-container>
+</ng-template>

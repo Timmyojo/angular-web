@@ -1,0 +1,54 @@
+<div *ngIf="totalItems > 0" class="w-full flex justify-between items-center">
+  <!-- Informations de pagination -->
+  <div>
+    Affichage de {{ startItem }} à {{ endItem }} sur {{ totalItems }} éléments
+  </div>
+
+  <nav
+    class="flex justify-center mt-6 w-fit"
+    aria-label="Navigation de pagination"
+  >
+    <ul
+      *transloco="let t"
+      class="inline-flex items-center gap-2 text-sm font-medium"
+    >
+      <!-- Précédent -->
+      <li>
+        <button
+          class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition disabled:opacity-40"
+          [disabled]="currentPage === 1"
+          (click)="changePage(currentPage - 1)"
+        >
+          &laquo;
+          {{ t("general.paginator.previous") }}
+        </button>
+      </li>
+
+      <!-- Numéros de page -->
+      <li *ngFor="let page of visiblePages">
+        <button
+          (click)="changePage(page)"
+          [ngClass]="{
+            'bg-[#1D9BED] text-white': page === currentPage,
+            'text-gray-700 bg-white hover:bg-gray-100 border-[#1D9BED]':
+              page !== currentPage
+          }"
+          class="px-3 py-2 rounded-md border border-gray-300 transition"
+        >
+          {{ page }}
+        </button>
+      </li>
+
+      <!-- Suivant -->
+      <li>
+        <button
+          class="px-3 py-2 rounded-md border border-gray-300 bg-white text-gray-600 hover:bg-gray-100 transition disabled:opacity-40"
+          [disabled]="currentPage === totalPages"
+          (click)="changePage(currentPage + 1)"
+        >
+          {{ t("general.paginator.next") }} &raquo;
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>

@@ -1,0 +1,73 @@
+<!-- carte / conteneur -->
+<div
+  class="quill-card focus-within:ring-2 focus-within:ring-[#1d9bed] rounded-sm"
+>
+  <!-- Toolbar -->
+  <div #toolbar class="quill-toolbar">
+    <!-- En-têtes -->
+    <span class="ql-formats">
+      <select class="ql-header">
+        <option selected></option>
+        <option value="1"></option>
+        <option value="2"></option>
+        <option value="3"></option>
+        <option value="4"></option>
+        <option value="5"></option>
+        <option value="6"></option>
+      </select>
+    </span>
+
+    <!-- Styles de texte -->
+    <span class="ql-formats">
+      <button class="ql-bold"></button>
+      <button class="ql-italic"></button>
+      <button class="ql-underline"></button>
+      <button class="ql-strike"></button>
+    </span>
+
+    <!-- Couleurs / fonds -->
+    <span class="ql-formats">
+      <select class="ql-color"></select>
+      <select class="ql-background"></select>
+    </span>
+
+    <!-- Alignement -->
+    <span class="ql-formats">
+      <select class="ql-align"></select>
+    </span>
+
+    <!-- Listes / indentation -->
+    <span class="ql-formats">
+      <button class="ql-list" value="ordered"></button>
+      <button class="ql-list" value="bullet"></button>
+      <button class="ql-indent" value="-1"></button>
+      <button class="ql-indent" value="+1"></button>
+    </span>
+
+    <!-- Blocs -->
+    <span class="ql-formats">
+      <button class="ql-blockquote"></button>
+      <button class="ql-code-block"></button>
+    </span>
+
+    <!-- Liens / médias -->
+    <span class="ql-formats">
+      <button class="ql-link"></button>
+      <button class="ql-image"></button>
+      <button class="ql-video"></button>
+    </span>
+
+    <!-- Nettoyage -->
+    <span class="ql-formats">
+      <button class="ql-clean"></button>
+    </span>
+
+    <!-- Formules -->
+    <span class="ql-formats">
+      <button class="ql-formula"></button>
+    </span>
+  </div>
+
+  <!-- Éditeur -->
+  <div #editor class="quill-editor"></div>
+</div>
