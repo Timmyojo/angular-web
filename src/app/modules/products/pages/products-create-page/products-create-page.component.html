@@ -1,0 +1,17 @@
+<div *transloco="let t; read: 'academiccycles'">
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold mb-4 md:mb-0 flex items-center">
+        <i class="fas fa-recycle mr-2 text-green-500"></i>
+        {{ t("createTitle") }}
+      </h1>
+      <div class="ml-10">{{ t("createDescription") }}</div>
+    </div>
+  </div>
+
+  <!-- Formulaire de création -->
+  <app-academic-cycles-form
+    [isLoading]="isLoading"
+    (onSubmit)="onSubmit($event)"
+  ></app-academic-cycles-form>
+</div>

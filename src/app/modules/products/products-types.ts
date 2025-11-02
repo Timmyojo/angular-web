@@ -12,14 +12,14 @@ export interface CreateProductsDto {
 
 export interface Product extends BaseModel {
   name: string;
-  id: number;
+  id: string;
   description?: string;
   levels?: any[]; // Will be populated with AcademicLevel objects
 }
 
 // === UPDATE ===
 export interface UpdateProductsDto {
-  id: number;
+  id: string;
   name: string;
   description?: string;
   availability?: string;

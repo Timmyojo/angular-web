@@ -1,0 +1,39 @@
+<button
+  class="my-2 bg-primary app-primary"
+  *transloco="let t; read: 'academiccycles'"
+  (click)="handleBack()"
+>
+  <i class="fas fa-chevron-left mr-1 text-white"></i>
+  {{ t("common.previous") }}
+</button>
+
+<div
+  class="py-6 w-full bg-white rounded-sm flex flex-col"
+  *transloco="let t; read: 'academic-cycles'"
+>
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold mb-4 md:mb-0 flex items-center">
+        <i class="fas fa-edit mr-2 text-blue-500"></i>
+        {{ t("updateTitle") || "Modifier le cycle académique" }}
+      </h1>
+      <div class="ml-10">
+        {{
+          t("updateDescription") ||
+            "Modifiez les informations du cycle académique"
+        }}
+      </div>
+    </div>
+  </div>
+
+  <app-academic-cycles-form
+    [defaultValues]="item"
+    [isLoading]="isLoading"
+    (onSubmit)="onSubmit($event)"
+  ></app-academic-cycles-form>
+
+  <app-generic-error
+    *ngIf="hasError"
+    [message]="errorMessage"
+  ></app-generic-error>
+</div>

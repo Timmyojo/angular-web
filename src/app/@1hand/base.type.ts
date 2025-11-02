@@ -1,20 +1,20 @@
 // bases interfaces
 export interface BaseModel {
-  id: number;
+  id: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface BaseCreate {
-  id: number;
+  id: string;
   createdAt?: Date;
 }
 export interface BaseUpdate {
-  id: number;
+  id: string;
   updatedAt?: Date;
 }
 export interface BaseDelete {
-  id: number;
+  id: string;
   deletedAt?: Date;
 }
 

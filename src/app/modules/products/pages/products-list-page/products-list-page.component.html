@@ -1,0 +1,115 @@
+<div *transloco="let t; read: 'academiccycles'">
+  <!-- Titre et barre d'action -->
+  <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-semibold mb-4 md:mb-0">
+        <i class="fas fa-recycle mr-2 text-green-500"></i>
+        {{ t("listTitle") }}
+      </h1>
+      <div class="text-gray-600">{{ t("listDescription") }}</div>
+    </div>
+
+    <div class="text-2xl font-semibold">{{ totalItems }} cycles trouvés</div>
+  </div>
+
+  <div class="flex items-center justify-end gap-3 mb-4">
+    <!-- Bouton de création -->
+    <button
+      (click)="handleCreate()"
+      class="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+    >
+      <i class="fas fa-plus"></i>
+      {{ t("actions.create") }}
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <div
+    class="bg-white p-4 rounded shadow mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm"
+  >
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Rechercher par nom..."
+        [value]="filters.search"
+        (input)="onSearchChange($event)"
+        class="border p-2 rounded w-full pr-8"
+      />
+      <i
+        class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+      ></i>
+    </div>
+
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Rechercher par description..."
+        [value]="filters.description"
+        (input)="onDescriptionFilterChange($event)"
+        class="border p-2 rounded w-full pr-8"
+      />
+      <i
+        class="fas fa-align-left absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+      ></i>
+    </div>
+
+    <div class="flex gap-2">
+      <button
+        (click)="onResetFilters()"
+        [disabled]="isLoading"
+        class="bg-gray-100 px-4 py-2 rounded border text-sm hover:bg-gray-200 disabled:opacity-50 transition-colors flex items-center gap-2 flex-1"
+      >
+        <i class="fas fa-times"></i>
+        Réinitialiser
+      </button>
+
+      <button
+        (click)="onApplyFilters()"
+        [disabled]="isLoading"
+        class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-50 transition-colors flex-1"
+      >
+        Filtrer
+      </button>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div>
+    <div *ngIf="isLoading" class="grid grid-rows-[1fr] h-[400px]">
+      <div class="w-full text-center h-full">
+        <app-loader></app-loader>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && hasError" class="w-full">
+      <app-generic-error
+        *ngIf="hasError"
+        [message]="errorMessage"
+      ></app-generic-error>
+    </div>
+
+    <div *ngIf="!isLoading && !hasError" class="max-w-full w-full">
+      <app-academic-cycles-datatable
+        [items]="items"
+        [isLoading]="false"
+        [hasError]="false"
+        (create)="handleCreate()"
+        (view)="handleView($event)"
+        (update)="handleUpdate($event)"
+        (delete)="handleDelete($event)"
+      ></app-academic-cycles-datatable>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-end mb-4 mt-6">
+      <app-generic-paginator
+        [currentPage]="page"
+        [totalPages]="totalPages"
+        [totalItems]="totalItems"
+        [maxVisible]="5"
+        [pageSize]="limit"
+        (pageChange)="onPageChange($event)"
+      ></app-generic-paginator>
+    </div>
+  </div>
+</div>
